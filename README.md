@@ -2,4 +2,4 @@
 
 npm install
 
-cp public/mapbux_auth.js.template and fill in the id and authToken.
+cp public/mapbox_auth.js.template and fill in the id and authToken.
