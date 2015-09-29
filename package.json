@@ -1,0 +1,16 @@
+{
+  "name": "siri_cache_server",
+  "version": "1.0.0",
+  "description": "Cache the location data from the NYC MTA Subway SIRI feed and serve a visualization.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.13.3",
+    "request": "^2.64.0"
+  }
+}

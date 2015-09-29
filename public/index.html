@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <script src="mapbox_auth.js"></script>
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+        <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>-->
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+        <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js'></script>
+        <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css' rel='stylesheet' />
+
+        <style type="text/css">
+         #map {
+             height: 100%;
+             width: 100%;
+         }
+
+         .btn {
+            height: 22px;
+            width: 50px;
+            position: absolute;
+         }
+
+         #trip_id_field {
+            height: 20px;
+            width: 150px;
+            position : absolute;
+            left: 20px;
+            top: 100px;
+         }
+
+         #filter_trip_btn {
+             top: 99px;
+             left: 170px;
+         }
+         #clear_trip_btn {
+             top: 99px;
+             left: 220px;
+         }
+
+
+         #route_id_field {
+            height: 20px;
+            width: 150px;
+            position : absolute;
+            left: 20px;
+            top: 125px;
+         }
+
+         #filter_route_btn {
+             top: 124px;
+             left: 170px;
+         }
+         #clear_route_btn {
+             top: 124px;
+             left: 220px;
+         }
+
+
+        #trips_slice_start {
+            height: 20px;
+            width: 50px;
+            position : absolute;
+            left: 20px;
+            top: 150px;
+        }
+        #trips_slice_end {
+            height: 20px;
+            width: 50px;
+            position : absolute;
+            left: 72;
+            top: 150px;
+        }
+
+        #slice_btn {
+            top: 149px;
+            left: 122px;
+        }
+        #clear_slice_btn {
+            top: 149px;
+            left: 172px;
+        }
+
+        </style>
+    </head>
+
+    <body>
+        <div id="map"></div>
+
+        <input id="trip_id_field" type="text"/>
+        <button id="filter_trip_btn" type="button" class="btn">Filter</button>
+        <button id="clear_trip_btn" type="button" class="btn">Clear</button>
+
+        <input id="route_id_field" type="text"/>
+        <button id="filter_route_btn" type="button" class="btn">Filter</button>
+        <button id="clear_route_btn" type="button" class="btn">Clear</button>
+
+        <input type="text" id="trips_slice_start"  />
+        <input type="text" id="trips_slice_end"  />
+        <button id="slice_btn" type="button" class="btn">Slice</button>
+        <button id="clear_slice_btn" type="button" class="btn">Clear</button>
+
+        <div id="slider-container"></div>
+
+        <script src="viz.js"></script>
+        
+    </body>
+</html>
