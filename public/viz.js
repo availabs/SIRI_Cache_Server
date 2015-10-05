@@ -190,10 +190,9 @@
             });
         }
 
+        trips = trips || [];
 
-        if (trips) {
-            trips.sort();
-        }
+        trips.sort();
 
 
         if ( (! selectedTrip) && ((sliceStart !== null) || (sliceEnd !== null)) ) {
