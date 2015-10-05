@@ -40,7 +40,7 @@
 
     (function retrieveLocations() {
         $.ajax({
-            url: 'http://localhost:11939/locations',
+            url: '/locations',
             success: function(data) {
                timestamps = Object.keys(data);
                curTimestamp = timestamps[0];
@@ -185,13 +185,15 @@
 
 
         if (selectedRoute) {
-            trips = trips.filter(function (trip) {
+            trips = trips && trips.filter(function (trip) {
                 return (snapshot[trip].route_id === selectedRoute);
             });
         }
 
 
-        trips.sort();
+        if (trips) {
+            trips.sort();
+        }
 
 
         if ( (! selectedTrip) && ((sliceStart !== null) || (sliceEnd !== null)) ) {

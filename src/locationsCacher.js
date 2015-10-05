@@ -9,8 +9,8 @@ function updateLocationsData (siriResponse) {
         var timestamp = siriResponse.Siri.ServiceDelivery.ResponseTimestamp,
 
             vehicleActivity = siriResponse.Siri.ServiceDelivery.VehicleMonitoringDelivery.VehicleActivity,
-
-            projection = vehicleActivity.reduce(function (acc, monitoredJourney) {
+ 
+            projection = vehicleActivity.reduce(function (acc, monitoredJourney) { 
                 var vRef     = monitoredJourney.MonitoredVehicleJourney.VehicleRef,
                     lon      = monitoredJourney.MonitoredVehicleJourney.VehicleLocation.Longitude,
                     lat      = monitoredJourney.MonitoredVehicleJourney.VehicleLocation.Latitude,
@@ -37,12 +37,14 @@ function updateLocationsData (siriResponse) {
 } 
 
 function requestSIRIData () {
-    request('http://localhost:16180/vehicle-monitoring', function (error, response, body) {
-        if (!error && response.statusCode === 200) {
+    request('http://localhost:16180/vehicle-monitoring/?VehicleMonitoringDetailLevel=calls', function (error, response, body) {
+        if (error) {
+            console.error(error);
+        } else if (response.statusCode === 200) {
             try {
                 updateLocationsData(JSON.parse(body));
             } catch (e) {
-                console.eror(e.stack);
+                console.error(e.stack);
             }
         }
     });
