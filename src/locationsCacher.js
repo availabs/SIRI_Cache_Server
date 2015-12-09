@@ -8,7 +8,7 @@ function updateLocationsData (siriResponse) {
     try {
         var timestamp = siriResponse.Siri.ServiceDelivery.ResponseTimestamp,
 
-            vehicleActivity = siriResponse.Siri.ServiceDelivery.VehicleMonitoringDelivery.VehicleActivity,
+            vehicleActivity = siriResponse.Siri.ServiceDelivery.VehicleMonitoringDelivery[0].VehicleActivity,
  
             projection = vehicleActivity.reduce(function (acc, monitoredJourney) { 
                 var vRef     = monitoredJourney.MonitoredVehicleJourney.VehicleRef,
@@ -37,14 +37,15 @@ function updateLocationsData (siriResponse) {
 } 
 
 function requestSIRIData () {
-    request('http://localhost:16180/vehicle-monitoring/?VehicleMonitoringDetailLevel=calls', function (error, response, body) {
+    request('http://siri.mta.availabs.org/api/siri/vehicle-monitoring.json/?VehicleMonitoringDetailLevel=calls', function (error, response, body) {
         if (error) {
-            console.error(error);
+            console.error('request error',error);
         } else if (response.statusCode === 200) {
+		//console.log('got data',body);
             try {
                 updateLocationsData(JSON.parse(body));
             } catch (e) {
-                console.error(e.stack);
+                console.error('try update location error',e.stack);
             }
         }
     });
