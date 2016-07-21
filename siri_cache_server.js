@@ -11,7 +11,7 @@ app.get('/locations', function (req, res) {
 
 app.use('/', express.static('public'));
 
-var server = app.listen('11939', function () {
+var server = app.listen('10203', function () {
   var host = server.address().address;
   var port = server.address().port;
 

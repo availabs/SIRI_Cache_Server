@@ -1,7 +1,7 @@
 //$(function () {
     'use strict';
 
-    /* globals _, $, L, mapbox_id, mapbox_accessToken */
+    /* globals $, L, mapbox_id, mapbox_accessToken */
 
 
 
@@ -106,7 +106,6 @@
 
     function selectRoute () {
         selectedRoute = $.trim($('#route_id_field').val());
-console.log('selectedRoute ==>', selectedRoute)
         showTrains();
     }
     function deselectRoute () {
@@ -160,9 +159,9 @@ console.log('selectedRoute ==>', selectedRoute)
         $('#trips_slice_end').attr('placeholder', allTripIDs.length);
     }
 
-    //function clearTrains () {
-        //markers.clearLayers();
-    //}
+    function clearTrains () {
+        markers.clearLayers();
+    }
 
 
     function tripMarkerClickHandler () {
@@ -175,74 +174,42 @@ console.log('selectedRoute ==>', selectedRoute)
         selectTrip();
     }
 
-    
-    var markerIndex;
-
     function showTrains () {
 
-        var snapshot = locationData[curTimestamp] , 
-            trips    = selectedTrip ? [selectedTrip] : (snapshot && Object.keys(snapshot)) ,
-            existingMarkerIds = _.keys(markerIndex) ,
-            newMarkerIndex = {},
-            marker ;
-
-        var toUpdate,
-            toRemove,
-            toInsert;
+        var snapshot = locationData[curTimestamp], 
+            //trips    = Object.keys(snapshot).slice(25,40);
+            trips    = selectedTrip ? [selectedTrip] : (snapshot && Object.keys(snapshot)),
+            marker;
 
         $("#clock").text(curTimestamp);
 
-
         if (selectedRoute) {
-            var tripsForRoute = trips && trips.filter(function (trip) {
+            trips = trips && trips.filter(function (trip) {
                 return (snapshot[trip].route_id === selectedRoute);
             });
-
-            trips = tripsForRoute
         }
+
+        trips = trips || [];
+
+        trips.sort();
+
 
         if ( (! selectedTrip) && ((sliceStart !== null) || (sliceEnd !== null)) ) {
-            trips = (trips || []).slice(sliceStart, (sliceEnd !== null) ? sliceEnd : allTripIDs.length);
+            trips = trips.slice(sliceStart, (sliceEnd !== null) ? sliceEnd : allTripIDs.length);
         }
 
-        toUpdate = _.intersection(existingMarkerIds, trips),
-        toRemove = _.difference(existingMarkerIds, trips),
-        toInsert = _.difference(trips, existingMarkerIds);
+        clearTrains();
 
-        var tripId,
-            latLng,
-            i;
+        for (var i=0; i < trips.length; ++i) {
+            marker = L.marker([parseFloat(snapshot[trips[i]].lat), parseFloat(snapshot[trips[i]].lon)]);
 
-
-
-        for ( i = 0; i < toRemove.length; ++i ) {
-            tripId = toRemove[i];
-            map.removeLayer(markerIndex[tripId]);
-        }
-        
-        for ( i = 0; i < toUpdate.length; ++i ) {
-            tripId = toUpdate[i];
-            latLng = L.latLng(snapshot[tripId].lat, snapshot[tripId].lon);
-            markerIndex[tripId].setLatLng(latLng);
-            newMarkerIndex[tripId] = markerIndex[tripId];
-        }
-        
-        for ( i = 0; i < toInsert.length; ++i) {
-            tripId = toInsert[i];
-            latLng = L.latLng(snapshot[tripId].lat, snapshot[tripId].lon);
-
-            marker = new L.marker(latLng);
-
-            marker.bindLabel(toInsert[i], { clickable: true, noHide: false });
-
+            marker.bindLabel(trips[i], { clickable: true, noHide: true });
+            //marker.bindLabel('', { clickable: true, noHide: true });
             marker.on('click', tripMarkerClickHandler);
 
             markers.addLayer(marker);
             markers.addTo(map);
-            newMarkerIndex[tripId] = marker;
         }
-
-        markerIndex = newMarkerIndex;
     }
 
 //});
