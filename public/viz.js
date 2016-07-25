@@ -21,7 +21,9 @@ $(function () {
         selectedRoute = null,
 
         sliceStart,
-        sliceEnd;
+        sliceEnd,
+
+        slider;
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         maxZoom: 18,
@@ -43,7 +45,15 @@ $(function () {
             url: '/locations',
             success: function(data) {
                timestamps = Object.keys(data);
-               curTimestamp = timestamps[0];
+                
+               // If the curTimestamp was the latest timestamp,
+               // keep following the latest. Otherwise, remain on curTimstamp.
+               if (timestamps.slice(-2)[0] === curTimestamp) {
+                  curTimestamp = timestamps.slice(-1)[0]
+               } else {
+                 curTimestamp = curTimestamp || timestamps[0];
+               }
+
                locationData = data;
                setAllTripIDs();
                setAllRouteIDs();
@@ -131,24 +141,26 @@ $(function () {
 
 
     function initSlider () {
-        var slider = $( "<div id='slider'></div>" ).appendTo( sliderDiv ).slider({
-            min: 0,
-            max: Object.keys(locationData).length - 1,
-            //range: "min",
-            value: 0,
-            slide: function( event, ui ) {
-                curTimestamp = timestamps[ui.value];
-                showTrains();
-            }
-        });
+        if (!slider) {
+          slider = $( "<div id='slider'></div>" ).appendTo( sliderDiv ).slider({
+              min: 0,
+              max: Object.keys(locationData).length - 1,
+              //range: "min",
+              value: 0,
+              slide: function( event, ui ) {
+                  curTimestamp = timestamps[ui.value];
+                  showTrains();
+              }
+          });
 
-        slider.css('position', 'fixed');
-        slider.css('bottom', '30px');
-        slider.css('height', '15px');
-        slider.css('width', '1000px');
-        slider.css('left', '50px');
-        slider.slider('value', 3);
+          slider.css('position', 'fixed');
+          slider.css('bottom', '30px');
+          slider.css('height', '15px');
+          slider.css('width', '1000px');
+          slider.css('left', '50px');
+        }
 
+        slider.slider('value', timestamps.findIndex(function (t) { return t === curTimestamp; }));
     }
 
 
@@ -242,6 +254,6 @@ $(function () {
 
   // Set it off
   retrieveLocations()
-  setInterval(retrieveLocations, 30000)
+  setInterval(retrieveLocations, 15000)
 
 });

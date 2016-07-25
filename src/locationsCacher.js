@@ -20,8 +20,6 @@ var feedURLs = config.feedURLs;
 
 
 
-var timestampCounter = {};
-
 function updateLocationsData (siriResponse, timestamp) {
     try {
         var msgDate = moment(timestamp).format('YYYYMMDD') ,
@@ -49,28 +47,16 @@ function updateLocationsData (siriResponse, timestamp) {
 
             i;
 
-
-        if (!timestampCounter[timestamp]) {
-            timestampCounter[timestamp] = 1; 
-        } else {
-            ++timestampCounter[timestamp];
-        }
-
-        locations[timestamp] = _.assign(locations[timestamp], projection);
-
         // Clean out expired locations data.
         var timestamps = Object.keys(locations);
+
+        locations[timestamp] = _.merge(locations[timestamp], locations[timestamps.slice(-1)[0]], projection);
 
         var now = moment();
         var expiredTimestamps = timestamps.filter(t => (moment(t).add(1, 'days').unix() < now.unix()));
 
         for (i = 0; i < expiredTimestamps.length; ++i) {
           delete locations[expiredTimestamps[i]];
-        }
-
-        if (timestampCounter[timestamp] === (feedURLs.length - 1)) {
-            console.log(timestamp);
-            delete timestampCounter[timestamp];
         }
 
     } catch (e) {
@@ -80,20 +66,29 @@ function updateLocationsData (siriResponse, timestamp) {
 
 
 
+var latestTimestamp;
+
 function requestSIRIData () {
-    var timestamp = moment().format() ,
+    var thisTimestamp= latestTimestamp = moment().format(),
         i;
 
-
     function handler (error, response, body) {
-        if (error) {
-            console.error('request error',error);
-        } else if (response.statusCode === 200) {
+        if (response.statusCode === 200) {
             try {
-                updateLocationsData(JSON.parse(body), timestamp);
+                updateLocationsData(JSON.parse(body), thisTimestamp);
             } catch (e) {
                 console.error(e.stack);
             }
+        } else {
+          if (error) {
+              console.error('request error',error);
+          }
+          
+          // Retry, if not too late.
+          if (thisTimestamp.unix() === latestTimestamp.unix()) {
+            console.log('Retrying the Siri server');
+            request(response.request.href, handler)
+          }
         }
     }
 
