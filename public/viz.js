@@ -21,9 +21,7 @@ $(function () {
         selectedRoute = null,
 
         sliceStart,
-        sliceEnd,
-
-        slider;
+        sliceEnd;
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         maxZoom: 18,
@@ -141,7 +139,8 @@ $(function () {
 
 
     function initSlider () {
-        slider = $( "<div id='slider'></div>" ).appendTo( sliderDiv ).slider({
+        $( "<div id='slider'></div>" ).remove()
+        var slider = $( "<div id='slider'></div>" ).appendTo( sliderDiv ).slider({
             min: 0,
             max: Object.keys(locationData).length - 1,
             //range: "min",
