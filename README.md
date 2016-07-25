@@ -1,7 +1,15 @@
 # SIRI_Cache_Server
 
-npm install
+This project provides a Node server that will visualize the locations ov vehicles in a Siri 
+feed. It keeps the locations data for the past 24 hours.
 
-cp public/mapbox_auth.js.template and fill in the id and authToken.
+### Pointing this server at a feed.
++ You can add multiple feeds to the feedURLs property in `config/config.js`
 
-npm start
+### MapBox auth.
++ `cp public/mapbox_auth.js.template public/mapbox_auth.js`
++ Fill in your id and authToken.
+
+###Deployment
++ `npm install`
++ npm start
