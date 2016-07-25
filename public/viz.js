@@ -1,4 +1,4 @@
-//$(function () {
+$(function () {
     'use strict';
 
     /* globals _, $, L, mapbox_id, mapbox_accessToken */
@@ -38,7 +38,7 @@
     $('#clear_slice_btn').click(clearSliceValues);
 
 
-    (function retrieveLocations() {
+    function retrieveLocations() {
         $.ajax({
             url: '/locations',
             success: function(data) {
@@ -52,7 +52,7 @@
                showTrains();
             },
         });
-    }());
+    };
 
     var sliderDiv = $('#slider-container');
 
@@ -106,7 +106,6 @@
 
     function selectRoute () {
         selectedRoute = $.trim($('#route_id_field').val());
-console.log('selectedRoute ==>', selectedRoute)
         showTrains();
     }
     function deselectRoute () {
@@ -159,10 +158,6 @@ console.log('selectedRoute ==>', selectedRoute)
         $('#trips_slice_start').attr('placeholder', 0);
         $('#trips_slice_end').attr('placeholder', allTripIDs.length);
     }
-
-    //function clearTrains () {
-        //markers.clearLayers();
-    //}
 
 
     function tripMarkerClickHandler () {
@@ -245,4 +240,8 @@ console.log('selectedRoute ==>', selectedRoute)
         markerIndex = newMarkerIndex;
     }
 
-//});
+  // Set it off
+  retrieveLocations()
+  setInterval(retrieveLocations, 30000)
+
+});
