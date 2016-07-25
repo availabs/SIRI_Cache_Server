@@ -69,7 +69,7 @@ function updateLocationsData (siriResponse, timestamp) {
 var latestTimestamp;
 
 function requestSIRIData () {
-    var thisTimestamp= latestTimestamp = moment().format(),
+    var thisTimestamp = latestTimestamp = moment().format(),
         i;
 
     function handler (error, response, body) {
@@ -85,7 +85,7 @@ function requestSIRIData () {
           }
           
           // Retry, if not too late.
-          if (thisTimestamp.unix() === latestTimestamp.unix()) {
+          if (thisTimestamp === latestTimestamp) {
             console.log('Retrying the Siri server');
             request(response.request.href, handler)
           }
