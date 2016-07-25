@@ -7,9 +7,9 @@ feed. It keeps the locations data for the past 24 hours.
 + You can add multiple feeds to the feedURLs property in `config/config.js`
 
 ### MapBox auth.
-+ `cp public/mapbox_auth.js.template public/mapbox_auth.js`
-+ Fill in your id and authToken.
++ `mv public/mapbox_auth.js.template public/mapbox_auth.js`
++ Fill in your id and authToken in `public/mapbox_auth.js`
 
 ###Deployment
 + `npm install`
-+ npm start
++ `npm start`
