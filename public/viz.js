@@ -141,24 +141,22 @@ $(function () {
 
 
     function initSlider () {
-        if (!slider) {
-          slider = $( "<div id='slider'></div>" ).appendTo( sliderDiv ).slider({
-              min: 0,
-              max: Object.keys(locationData).length - 1,
-              //range: "min",
-              value: 0,
-              slide: function( event, ui ) {
-                  curTimestamp = timestamps[ui.value];
-                  showTrains();
-              }
-          });
+        slider = $( "<div id='slider'></div>" ).appendTo( sliderDiv ).slider({
+            min: 0,
+            max: Object.keys(locationData).length - 1,
+            //range: "min",
+            value: 0,
+            slide: function( event, ui ) {
+                curTimestamp = timestamps[ui.value];
+                showTrains();
+            }
+        });
 
-          slider.css('position', 'fixed');
-          slider.css('bottom', '30px');
-          slider.css('height', '15px');
-          slider.css('width', '1000px');
-          slider.css('left', '50px');
-        }
+        slider.css('position', 'fixed');
+        slider.css('bottom', '30px');
+        slider.css('height', '15px');
+        slider.css('width', '1000px');
+        slider.css('left', '50px');
 
         slider.slider('value', timestamps.findIndex(function (t) { return t === curTimestamp; }));
     }
