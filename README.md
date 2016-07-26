@@ -1,6 +1,6 @@
 # SIRI_Cache_Server
 
-This project provides a Node server that will visualize the locations ov vehicles in a Siri 
+This project provides a Node server that will visualize the locations of vehicles in a Siri 
 feed. It keeps the locations data for the past 24 hours.
 
 ### Pointing this server at a feed.
