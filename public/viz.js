@@ -45,7 +45,6 @@ $(function () {
             url: '/locations',
             success: function(data) {
                timestamps = Object.keys(data);
-console.log('timestamp:', timestamps.slice(-1)[0])
                 
                // If the curTimestamp was the latest timestamp,
                // keep following the latest. Otherwise, remain on curTimstamp.

@@ -8,7 +8,7 @@ var fs = require('fs') ,
     _ = require('lodash') ;
 
 
-var config = require('../config/config')
+var feedURLs = require('../config/feedURLs')
 
 var locations = {};
 
@@ -16,7 +16,6 @@ var dataDirPath = path.normalize(path.join(__dirname, '../data')),
     logDate ,
     dataStream ;
 
-var feedURLs = config.feedURLs;
 
 
 
@@ -50,7 +49,7 @@ function updateLocationsData (siriResponse, timestamp) {
         // Clean out expired locations data.
         var timestamps = Object.keys(locations);
 
-        locations[timestamp] = _.merge(locations[timestamp], locations[timestamps.slice(-1)[0]], projection);
+        locations[timestamp] = _.merge(locations[timestamp], locations[timestamps[timestamps.length - 1]], projection);
 
         var now = moment();
         var expiredTimestamps = timestamps.filter(t => (moment(t).add(1, 'days').unix() < now.unix()));
