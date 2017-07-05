@@ -11,6 +11,7 @@ var fs = require('fs') ,
 var feedURLs = require('../config/feedURLs')
 
 var locations = {};
+var bufferedLocations = null
 
 var dataDirPath = path.normalize(path.join(__dirname, '../data')),
     logDate ,
@@ -58,6 +59,9 @@ function updateLocationsData (siriResponse, timestamp) {
           delete locations[expiredTimestamps[i]];
         }
 
+        process.nextTick(() => {
+          bufferedLocations = new Buffer(JSON.stringify(locations), "utf-8")
+        })
     } catch (e) {
         console.log(e.stack);
     }
@@ -97,7 +101,7 @@ function requestSIRIData () {
 }
 
 function getLocations () {
-    return locations;
+    return bufferedLocations;
 }
 
 requestSIRIData()

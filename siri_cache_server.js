@@ -6,7 +6,9 @@ var app = express();
 var locationsCacher = require('./src/locationsCacher');
 
 app.get('/locations', function (req, res) {
-  res.send(locationsCacher.getLocations());
+  res.setHeader('Content-Type', 'application/json');
+  res.write(locationsCacher.getLocations());
+  res.end();
 });
 
 app.use('/', express.static('public'));
