@@ -11,6 +11,12 @@ app.get('/locations', function (req, res) {
   res.end();
 });
 
+app.get('/latest', function (req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  res.write(locationsCacher.getLatest());
+  res.end();
+});
+
 app.use('/', express.static('public'));
 
 var server = app.listen('10203', function () {

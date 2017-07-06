@@ -12,6 +12,7 @@ var feedURLs = require('../config/feedURLs')
 
 var locations = {};
 var bufferedLocations = null
+var bufferedLatest = null
 
 var dataDirPath = path.normalize(path.join(__dirname, '../data')),
     logDate ,
@@ -60,7 +61,17 @@ function updateLocationsData (siriResponse, timestamp) {
         }
 
         process.nextTick(() => {
-          bufferedLocations = new Buffer(JSON.stringify(locations), "utf-8")
+
+          var latest = Object.keys(locations).slice(-5).reduce(function (acc, ts) {
+            acc[ts] = locations[ts]
+            return acc
+          }, {})
+
+          bufferedLatest = new Buffer(JSON.stringify(latest), "utf-8")
+
+          process.nextTick(() => {
+            bufferedLocations = new Buffer(JSON.stringify(locations), "utf-8")
+          })
         })
     } catch (e) {
         console.log(e.stack);
@@ -101,7 +112,11 @@ function requestSIRIData () {
 }
 
 function getLocations () {
-    return bufferedLocations;
+  return bufferedLocations;
+}
+
+function getLatest () {
+  return bufferedLatest
 }
 
 requestSIRIData()
@@ -109,4 +124,5 @@ setInterval(requestSIRIData, 30000);
 
 module.exports = {
     getLocations : getLocations ,    
+    getLatest : getLatest ,    
 };

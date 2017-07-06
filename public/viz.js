@@ -3,7 +3,7 @@ $(function () {
 
     /* globals _, $, L, mapbox_id, mapbox_accessToken */
 
-
+    var latestReqCounter = 0
 
     var centerCoords = [40.74, -73.9751];
     var map = L.map('map').setView(centerCoords, 13);
@@ -14,7 +14,7 @@ $(function () {
 
         locationData,
 
-        timestamps,
+        allTimestamps,
         curTimestamp,
 
         selectedTrip  = null,
@@ -24,6 +24,8 @@ $(function () {
         sliceEnd,
 
         slider;
+
+    var isInMonitorMode = true;
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         maxZoom: 18,
@@ -40,38 +42,87 @@ $(function () {
     $('#clear_slice_btn').click(clearSliceValues);
 
 
-    function retrieveLocations() {
+    // Should only be called once.
+    function retrieveAllLocations() {
+        var tag = 'retrieveAllLocations'
+        console.time(tag)
         $.ajax({
             url: '/locations',
             success: function(data) {
-               timestamps = Object.keys(data);
-                
-               // If the curTimestamp was the latest timestamp,
-               // keep following the latest. Otherwise, remain on curTimstamp.
-               if (timestamps.slice(-2)[0] === curTimestamp) {
-                  curTimestamp = timestamps.slice(-1)[0]
-               } else {
-                 curTimestamp = curTimestamp || timestamps[0];
+               console.timeEnd(tag)
+               var timestamps = Object.keys(data).sort().reverse();
+               var ts
+               var i
+
+               locationData = locationData || {}
+
+               for (i = 0; i < timestamps.length; ++i) {
+                 ts = timestamps[i]
+                 locationData[ts] = data[ts]
+                 data[ts] = null  // give GC the heads up
                }
 
-               locationData = data;
-               setAllTripIDs();
-               setAllRouteIDs();
-               initSlider();
-               initTextFields();
-               showTrains();
+               allTimestamps = Object.keys(locationData).sort()
+
+               if (isInMonitorMode) {
+                 curTimestamp = allTimestamps[allTimestamps.length - 1]
+               }
+
+               setTimeout(function () {
+                 setAllTripIDs();
+                 setAllRouteIDs();
+                 initSlider();
+                 initTextFields();
+                 showTrains();
+               }, 0)
             },
         });
     };
 
+    function retrieveLatestLocations () {
+      var tag = ++latestReqCounter + ': retrieveLatestLocations'
+      console.time(tag)
+
+      $.ajax({
+        url: '/latest',
+        success: function(data) {
+          console.timeEnd(tag)
+          var latestTimestamps = Object.keys(data).sort().reverse()
+          var i
+
+          locationData = locationData || {}
+
+          for (i = 0; i < latestTimestamps.length; ++i) {
+            var ts = latestTimestamps[i]
+            locationData[ts] = data[ts]
+            data[ts] = null  // give GC the heads up
+          }
+
+          allTimestamps = Object.keys(locationData).sort()
+
+          if (isInMonitorMode) {
+            curTimestamp = allTimestamps[allTimestamps.length - 1]
+          }
+
+          setTimeout(function () {
+            setAllTripIDs();
+            setAllRouteIDs();
+            initSlider();
+            initTextFields();
+            showTrains();
+          }, 0)
+        }
+      });
+    }
+
     var sliderDiv = $('#slider-container');
 
     function setAllTripIDs () {
-       var timeStamps = Object.keys(locationData),
+       var timestamps = Object.keys(locationData),
            ids = {};
 
-       for (var i=0; i < timeStamps.length; ++i) {
-        var theseTripIDs = Object.keys(locationData[timeStamps[i]]); 
+       for (var i=0; i < timestamps.length; ++i) {
+        var theseTripIDs = Object.keys(locationData[timestamps[i]]); 
         for (var j=0; j < theseTripIDs.length; ++j) {
             ids[theseTripIDs[j]] = 1;
         }
@@ -83,14 +134,14 @@ $(function () {
 
 
     function setAllRouteIDs () {
-        var timeStamps = Object.keys(locationData),
+        var timestamps = Object.keys(locationData),
             theseTripIDs,
             locData,
             routeID,
             ids = {};
 
-        for (var i=0; i < timeStamps.length; ++i) {
-            locData = locationData[timeStamps[i]];
+        for (var i=0; i < timestamps.length; ++i) {
+            locData = locationData[timestamps[i]];
 
             theseTripIDs = Object.keys(locData); 
 
@@ -146,7 +197,8 @@ $(function () {
             slider = $( "<div id='slider'></div>" ).appendTo( sliderDiv ).slider({
                 min: 0,
                 slide: function( event, ui ) {
-                    curTimestamp = timestamps[ui.value];
+                    curTimestamp = allTimestamps[ui.value];
+                    isInMonitorMode = (curTimestamp === allTimestamps[allTimestamps.length - 1])
                     showTrains();
                 }
             });
@@ -159,7 +211,7 @@ $(function () {
         }
 
         slider.slider("option", "max", Object.keys(locationData).length - 1);
-        slider.slider('value', timestamps.findIndex(function (t) { return t === curTimestamp; }));
+        slider.slider('value', allTimestamps.findIndex(function (t) { return t === curTimestamp; }));
     }
 
 
@@ -252,7 +304,8 @@ $(function () {
     }
 
   // Set it off
-  retrieveLocations()
-  setInterval(retrieveLocations, 15000)
+  retrieveLatestLocations()
+  retrieveAllLocations()
+  setInterval(retrieveLatestLocations, 15000)
 
 });
